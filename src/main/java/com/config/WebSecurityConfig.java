@@ -3,6 +3,7 @@ package com.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -59,10 +60,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.cors().and().csrf().disable()
                 // dont authenticate this particular request
                 .authorizeRequests().antMatchers(
-                        "/api/authenticate",
-                        "/api/createUser",
-                        "/api/swagger-ui")
+                        HttpMethod.GET,
+                        "/",
+                        "/v2/api-docs",           // swagger
+                        "/webjars/**",            // swagger-ui webjars
+                        "/swagger-resources/**",  // swagger-ui resources
+                        "/configuration/**",      // swagger configuration
+                        "/*.html",
+                        "/favicon.ico",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js")
                 .permitAll().
+                antMatchers("/auth/**",
+                        "/api/authenticate",
+                        "/api/createUser").permitAll().
                 // all other requests need to be authenticated
                         anyRequest().authenticated().and().
                 // make sure we use stateless session; session won't be used to
